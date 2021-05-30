@@ -14,9 +14,9 @@ public class CarMapper {
 
     public static CarResponse mapToResponse(CarEntity carEntity) {
         return new CarResponse(
+                carEntity.getUuid(),
                 carEntity.getId(),
                 carEntity.getBrand(),
                 carEntity.getModel());
     }
-
 }

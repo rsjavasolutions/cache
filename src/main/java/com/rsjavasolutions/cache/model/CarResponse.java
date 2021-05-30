@@ -6,9 +6,8 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public class CarResponse {
-
+    private String uuid;
     private long id;
     private String band;
     private String model;
-
 }
