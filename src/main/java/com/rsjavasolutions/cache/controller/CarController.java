@@ -20,17 +20,22 @@ public class CarController {
     }
 
     @GetMapping("cars")
-    public List<CarResponse> getAllCars() {
+    public List<CarResponse> getCars() {
         return carService.getAllCars();
     }
 
     @PostMapping("cars")
-    public String saveCar(@RequestBody CarRequest carRequest) {
-        return carService.saveCar(carRequest);
+    public String saveCar(@RequestBody CarRequest request) {
+        return carService.saveCar(request);
     }
 
     @DeleteMapping("cars/{uuid}")
     public void deleteCarByUuid(@PathVariable String uuid) {
         carService.deleteCarByUuid(uuid);
+    }
+
+    @PutMapping("cars/{uuid}")
+    public CarResponse updateCar(@PathVariable String uuid, @RequestBody CarRequest request) {
+       return carService.updateCar(uuid, request);
     }
 }

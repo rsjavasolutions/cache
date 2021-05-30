@@ -9,7 +9,9 @@ import com.rsjavasolutions.cache.repository.CarRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,6 +38,7 @@ public class CarService {
     }
 
     @Transactional
+    @Cacheable(cacheNames = "SingleCar", key = "#uuid")
     public CarResponse getCarByUuid(String uuid) {
         CarEntity carEntity = carRepository.findByUuid(uuid).orElseThrow(() -> new CarNotFoundException(uuid));
         return mapToResponse(carEntity);
@@ -50,7 +53,23 @@ public class CarService {
     }
 
     @Transactional
-    @CacheEvict(cacheNames = "AllCars", allEntries = true)
+    @Caching(
+            evict = @CacheEvict(cacheNames = "AllCars", allEntries = true),
+            put = @CachePut(cacheNames = "SingleCar", key = "#result.uuid"))
+    public CarResponse updateCar(String uuid, CarRequest request) {
+        CarEntity carEntity = carRepository.findByUuid(uuid).orElseThrow(() -> new CarNotFoundException(uuid));
+
+        carEntity.setBrand(request.getBrand());
+        carEntity.setModel(request.getModel());
+
+        return mapToResponse(carEntity);
+    }
+
+    @Transactional
+    @Caching(evict = {
+            @CacheEvict(cacheNames = "AllCars", allEntries = true),
+            @CacheEvict(cacheNames = "SingleCar", key = "#uuid")
+    })
     public void deleteCarByUuid(String uuid) {
         carRepository.deleteByUuid(uuid);
     }
